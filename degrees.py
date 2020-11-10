@@ -84,7 +84,7 @@ def main():
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
 
-def shortest_path(source, target, path = []):
+def shortest_path(source, target):
     """
     shortest_path(souceID, targetID)
 
@@ -93,27 +93,44 @@ def shortest_path(source, target, path = []):
 
     If no possible path, returns None.
     """
-    # print("***********************")
-    # print("PEOPLE DICT")
-    # for item in people:
-    #     print(item, people[item])
-
-    # print("***********************")
-    # print("MOVIES DICT")
-    # for item in movies:
-    #     print(item, movies[item])
-
-    # Keep track of connections explored
-    num_explored = 0
-
-    
+    # Start node is the source actor
     start = Node(source, None, None)
-    frontier = QueueFrontier
+
+    # Breadth-first search
+    frontier = QueueFrontier()
     frontier.add(start)
 
+    # Empty explored set
+    explored = set()
 
+    while True:
+        if frontier.empty():
+            return None
 
-    return None
+        node = frontier.remove()
+
+        # Needs implementation
+        if node.state == target:
+            path = []
+
+            while node.parent is not None:
+                path.append((node.action, node.state))
+                node = node.parent
+            
+            path.reverse()
+            return path
+
+        # Mark node as explored
+        explored.add(node.state)
+
+        # Expand node
+        neighbors = neighbors_for_person(node.state)
+
+        # Add neighbors to frontier
+        for movie, person in neighbors:
+            if person not in explored and not frontier.contains_state(person):
+                child = Node(person, node, movie)
+                frontier.add(child)
 
 
 def person_id_for_name(name):
